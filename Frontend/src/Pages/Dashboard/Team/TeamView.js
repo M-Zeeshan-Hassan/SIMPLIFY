@@ -9,16 +9,21 @@ import SelectOptions from '../../../Components/SelectOptions'
 import Button from '../../../Components/Button'
 import { useNavigate } from 'react-router'
 import { useFile, userDetail, dynamic_User_Field } from './Data'
-import { useQuery } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { formatDate } from '../../../Components/Date'
 import { Helmet } from "react-helmet";
 import { useSelector } from 'react-redux'
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import axios from 'axios';
 
 
 const TeamView = () => {
 
     const navigate = useNavigate();
     const user = useSelector((state) => state.auth.user);
+    const isAdmin = user?.userType === "Admin";
+      NProgress.configure({ showSpinner: false });
 
     const {
         register,
@@ -31,6 +36,7 @@ const TeamView = () => {
     } = useForm();
 
     const { id } = useParams();
+    const deletedURL = "http://localhost:8000/team/deleted"
     const { getFetch, updateFetch } = useFetch(`http://localhost:8000/team/view/${id}`);
 
     const [onFileChange, fileInputRef, resetFileInput, triggerFileInput, imagePreview] = useFile(setValue);
@@ -49,12 +55,24 @@ const TeamView = () => {
 
     useEffect(() => {
         if (allData) {
-            const nameParts = allData.fullName.split(" ");
+            console.log(allData);
+            const imagePath = allData?.userImage?.replace("public\\", "")?.replace("public/", "")?.replace(/\\/g, "/");
+            //setValue("userImage", imagePath);
+            console.log(imagePath);
+
+            const nameParts = allData?.fullName?.split(" ");
+
             setValue("firstName", nameParts[0]);
             setValue("lastName", nameParts[1]);
-            setValue("userType", allData.userType);
-            setValue("email", allData.email);
-            setValue("active", allData.active);
+            setValue("userType", allData?.userType);
+            setValue("email", allData?.email);
+            setValue("active", allData?.active);
+            setValue("userImage", imagePath)
+           setValue("contractType", allData?.active);
+            setValue("corporateTax", allData?.corporateTax)
+              setValue("contractType", allData?.contractType)
+            setValue("commisionRate", allData?.commisionRate)
+            
 
         }
     }, [allData]);
@@ -66,11 +84,51 @@ const TeamView = () => {
         console.log(data);
         try {
             await updateFetch(data);
+              NProgress.start();
+             navigate('/team/list');
         }
         catch (error) {
             console.log(error);
         }
+        finally {
+            NProgress.done();
+       }
     }
+
+     const queryClient = useQueryClient();
+
+    const deleteMutation = useMutation(
+        async () => {
+            
+            return await axios.delete(`${deletedURL}/${id}`, {
+                withCredentials: true,
+            });
+        },
+        {
+            onMutate: () => {
+                NProgress.start();
+            },
+            onSuccess: (response) => {
+                console.log("Deleted Successfully:", response.data);
+                NProgress.done();
+                queryClient.invalidateQueries(['deleteTeam']);
+
+                setTimeout(() => {
+                    navigate('/team/list');
+                }, 800);
+            },
+            onError: (error) => {
+                console.error("Delete failed:", error);
+                NProgress.done();
+            },
+        }
+    );
+
+      const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this record?")) {
+            deleteMutation.mutate();
+        }
+    };
 
     return (
         <>
@@ -104,8 +162,9 @@ const TeamView = () => {
                                         <span className='text-reds w-3 h-3 '> * </span>
                                         Active
                                     </label>
-                                    <input {...register("active")} defaultChecked type="checkbox"
-                                        className="toggle-btn" />
+                                    <input {...register("active")} defaultChecked type="checkbox" disabled={!isAdmin} // 👈 actually disables clicking
+                                      readOnly={!isAdmin}
+                                        className={`toggle-btn ${ !isAdmin ? 'bg-gray-100 cursor-not-allowed' : ''} `}  />
 
                                 </div>
                                 <div className={`flex items-center   rounded py-2 px-3.5  bg-textColor2 text-white 
@@ -131,10 +190,10 @@ const TeamView = () => {
                                                 {fields.isSelect ?
 
                                                     (<SelectOptions field={fields} setValue={setValue} register={register}
-                                                        errors={errors} />)
+                                                        errors={errors} disabled={!isAdmin} />)
                                                     :
                                                     (<InputField fields={fields} errors={errors}
-                                                        register={register} />
+                                                        register={register} disabled={!isAdmin} />
                                                     )
                                                 }
                                             </div>
@@ -152,10 +211,10 @@ const TeamView = () => {
                                             {fields.isSelect ?
 
                                                 (<SelectOptions field={fields} setValue={setValue} register={register}
-                                                    errors={errors} />)
+                                                    errors={errors} disabled={!isAdmin}  />)
                                                 :
                                                 (<InputField fields={fields} errors={errors}
-                                                    register={register} />
+                                                    register={register} disabled={!isAdmin} />
                                                 )
                                             }
                                         </div>)
@@ -167,24 +226,23 @@ const TeamView = () => {
 
                         </div>
 
-                        <div style={{ height: '270px', width: '270px',border : "15px solid white" }} className={` xsm:m-auto mb-5 ${imagePreview ? `  border-8 bg-white ` : 'border-8'
+                        <div style={{ height: '270px', width: '270px', border: "15px solid white" }} className={` xsm:m-auto mb-5 ${imagePreview ? `  border-8 bg-white ` : 'border-8'
                             } relative shadow-sideShadow flex justify-center items-center  rounded  border-white`}>
 
-                            {imagePreview ? (
-                                <img src={imagePreview}
-                                    alt="Selected" style={{
-                                        maxHeight: '100%', maxWidth: '100%',
-                                        borderRadius: '4px'
-                                    }} />
-                            ) :
-                                (<span onClick={triggerFileInput} >
-                                    {uploadIcon}
-                                </span>)}
+                            {imagePreview || watch("userImage") ? (
+                                <img
+                                    src={imagePreview || `http://localhost:8000/${watch("userImage")}`}
+                                    alt="Selected"
+                                    style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: '4px' }}
+                                />
+                            ) : (
+                                <span onClick={triggerFileInput}>{uploadIcon}</span>
+                            )}
 
                             {imagePreview &&
 
                                 <span onClick={triggerFileInput} className='absolute top-64 border-2
-                                 border-white bg-bgColor3 w-9 h-9 rounded-full'>
+                                 border-white bg- w-9 h-9 rounded-full'>
                                     {editIcon}
                                 </span>}
 
@@ -202,19 +260,21 @@ const TeamView = () => {
                         <div className='flex justify-between button'>
 
                             <Button
-                                type="button" label="Back" onClick={() => { navigate('/team/all') }}
+                                type="button" label="Back" onClick={() => { navigate('/team/list') }}
                                 icon={arrowLeft}
                                 className={` flex  border border-blanche bg-white text-textColor2`}
                             />
 
                             <div className='flex button'>
                                 <Button
+                                onClick={handleDelete}
+                                   disabled={!isAdmin}
                                     type="button" label="Delete"
                                     icon={deleteIcon} className={` flex   border text-white bg-reds border-searchIcon`}
                                 />
                                 <Button
-                                    type="submit" icon={refresh} label="Update" onSubmit={reset} disabled={!isDirty || isSubmitting}
-                                    className={` ${(!isDirty || isSubmitting) && 'opacity-50'} flex inner-btn  bg-textColor text-white  ml-3`}
+                                    type="submit" icon={refresh} label="Update" onSubmit={reset} disabled={!isDirty || isSubmitting || !isAdmin}
+                                    className={` ${(!isDirty || isSubmitting || !isAdmin) && 'opacity-50'} flex inner-btn  bg-textColor text-white  ml-3`}
                                 />
                             </div>
 

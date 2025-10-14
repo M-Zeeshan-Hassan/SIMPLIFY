@@ -178,4 +178,32 @@ export const supplierHeader =[
     "Status",
     "Action",
     
-]
+];
+
+export const purchaseOrderHeader = [
+    "PO Number",
+    "Issue Date",
+    "Suppliers",
+    "Detail",
+    "Created By",
+    "Assignee",
+    "Total Amount",
+    "Status",
+    "Action",
+
+];
+
+
+export const PurchaseInvoiceHeader = [
+    "PI Number",
+    "Issue Date",
+    "Supplier",
+    "Ref#",
+    "Detail",
+    "Created By",
+    "Assignee",
+    "Total Amount",
+    "Status",
+    "Action"
+
+];

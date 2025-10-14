@@ -11,6 +11,7 @@ const EditSaleInvoice = HocInputForm(EditInvoiceAndEstimate, {
   url : "http://localhost:8000/sales/si/edit",
   url2 : "http://localhost:8000/sales/si/new/products",
   url3 : "http://localhost:8000/sales/si/new/salesPerson",
+  deletedURL : "http://localhost:8000/sales/si/deleted"
 
 
 

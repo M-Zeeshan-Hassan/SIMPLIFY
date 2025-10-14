@@ -3,6 +3,8 @@ import { asyncHandler } from "../Utils/AsyncHandler.js";
 import nodemailer from 'nodemailer';
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js"
+import path from "path";
+
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -59,7 +61,7 @@ const createTeamMember = asyncHandler(async (req, res) => {
         }
 
         var mailOptions = {
-            from: 'bc220407079maz@vu.edu.pk',
+            from: 'mzhassan980@gmail.com',
             to: checkUser.email,
             subject: `Welcome ${checkUser.firstName} ${checkUser.lastName}`,
 
@@ -180,14 +182,24 @@ export const allMember = asyncHandler(async(req,res) => {
 
 export const detailView = asyncHandler(async(req,res) => {
     const { id } = req.params;
+    console.log("id",id);
 
     try {
         if(!id){
-            throw new ApiError(400, 'User ID is required!');
+             return res.status(404).json({
+                success: false,
+                message: 'Record not found',
+                data: null,
+             })
         }
         const user = await TeamMember.findById(id).select('-refreshToken -password -__v ');
+        const imageName = user?.userImage ? path.basename(user?.userImage) : null;
         if (!user) {
-            throw new ApiError(404, 'User not found!');
+            return res.status(404).json({
+                success: false,
+                message: 'Record not found',
+                data: null,
+            });
         }
 
         return res.status(200).json(new ApiResponse(
@@ -204,6 +216,9 @@ export const detailView = asyncHandler(async(req,res) => {
 
 export const editView = asyncHandler(async (req, res) => {
     const { id } = req.params;
+
+
+
     console.log(id);
     const {
       active,
@@ -214,13 +229,14 @@ export const editView = asyncHandler(async (req, res) => {
       contractType,
       corporateTax,
       commisionRate,
+
       updatedBy
     } = req.body;
 
     console.log(req.body);
   
-    const userImage = req?.file;
-    console.log(userImage?.path);
+    const userImage = req?.file || null;;
+    console.log("userimage",userImage?.path);
   
     try {
 
@@ -278,6 +294,41 @@ export const editView = asyncHandler(async (req, res) => {
       );
     }
   });
+
+
+
+  
+  export const deleteTeam = asyncHandler(async (req, res) => {
+      console.log("id", req.params.id)
+  
+      try {
+  
+          const deletedInvoice = await TeamMember.findByIdAndDelete(req.params.id);
+  
+          if (!deletedInvoice) {
+              return res.status(404).json({ message: 'Record not found' });
+          }
+  
+  
+  
+          return res.status(200).json(new ApiResponse({
+              message: "Team Member deleted successfully"
+          }));
+  
+      }
+      catch (error) {
+  
+          res.status(500).json(
+              new ApiResponse({
+                  data: null,
+                  message: error.message
+              })
+          )
+      }
+  
+  
+  })
+  
   
 
 export { createTeamMember, createPassword };

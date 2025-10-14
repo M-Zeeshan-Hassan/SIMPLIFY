@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef,memo } from 'react'
 
-const SelectOptions = ({ fieldName, setValue, register, field, errors, onOptionSelect }) => {
+const SelectOptions = ({ fieldName, setValue, register, field, errors, onOptionSelect, disabled }) => {
 
     
 
@@ -80,13 +80,13 @@ const SelectOptions = ({ fieldName, setValue, register, field, errors, onOptionS
                 <input style={{ boxShadow: '0 0 6px #172b4d0a' }}
                     onClick={() => { handleInputClick(field) }}
 
-                    className={`   ${errors && errors[field.inputName] ? 'focus:border-reds' : 'focus:border-textColor'} 
+                    className={`${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}   ${errors && errors[field.inputName] ? 'focus:border-reds' : 'focus:border-textColor'} 
                          w-full outline-none py-2 px-2  ${field.paddingLeft}   rounded text-sm text-textColor2    font-normal border bg-white  `}
 
                     type={field.type}
                     autoComplete='off'
                     placeholder={field.placeholder}
-                    disabled={field.disabled}
+                    disabled={field.disabled || disabled}
                     readOnly={field.readonly}
                     {...register(field.inputName, {
                         required: field.required,

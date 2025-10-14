@@ -49,7 +49,9 @@ export const useFetch = (url) => {
 
     const updateFetch = async (data) => {
         try {
-            let response = await axios.put(url, data);
+            let response = await axios.put(url, data,{
+                withCredentials: true,
+            });
             console.log("Success : ", response);
 
         } catch (error) {

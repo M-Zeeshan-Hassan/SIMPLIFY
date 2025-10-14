@@ -13,7 +13,7 @@ const contactPersonSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, "Email is required."],
-        unique: true,
+      //  unique: true,
     },
     phoneNo: {
         type: String,

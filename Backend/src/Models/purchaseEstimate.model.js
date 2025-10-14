@@ -1,15 +1,17 @@
 import mongoose from "mongoose"
+import { Counter } from "./Counter.model.js";
+
 mongoose.pluralize(null);
 
 const supplierDetails = new mongoose.Schema({
-    clientId : {
+    supplierId : {
         type : mongoose.Types.ObjectId,
-        ref : "NewClient",
+        ref : "Supplier",
         required : true
     },
-    clientName: {
+    supplierName: {
         type: String,
-        required: [true, "Client name is required"],
+        required: [true, "Supplier name is required"],
     },
     contactPerson : {
         type : String,
@@ -19,7 +21,7 @@ const supplierDetails = new mongoose.Schema({
     },
     email : {
         type : String,
-        unique : true,
+      
     },
     addressType : {
         type : String,
@@ -33,38 +35,48 @@ const supplierDetails = new mongoose.Schema({
 });
 
 const product = new mongoose.Schema({
-    sku : {
-       type : String,
+    productID: {
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+        required: true,
     },
-    name : {
-        type : String
+    sku: {
+        type: String,
+        required: [true, "Product SKU is required"],
     },
-    category : {
-      type : String,
-      enum : ["General Sales", "Goodwill","Insurance Claims","Stock","Rent Income","Sales of Assets",
-        "Royalties Recived", "Plant and Machinery","Office Equipment","Motor Vehicles",
-        "Bank Charges","Capital Expenditure","Commissions Received","Credit Charges (Late Payments)",
-        "Discounts Allowed","Distribution and Carriage","Flat Rate VAT Sales Adjustment",
-        "Furniture and Fixtures","General Export Sales","Goodwill Amortisation","Intangible Asset Amortisation",
-        "Miscellaneous Income",
-      ]
+    productServiceName: {
+        type: String,
+        required: [true, "Product name is required"],
+    },
+    category: {
+        type: String,
+        enum: ["General Sales", "Goodwill", "Insurance Claims", "Stock", "Rent Income", "Sales of Assets",
+            "Royalties Recived", "Plant and Machinery", "Office Equipment", "Motor Vehicles",
+            "Bank Charges", "Capital Expenditure", "Commissions Received", "Credit Charges (Late Payments)",
+            "Discounts Allowed", "Distribution and Carriage", "Flat Rate VAT Sales Adjustment",
+            "Furniture and Fixtures", "General Export Sales", "Goodwill Amortisation", "Intangible Asset Amortisation",
+            "Miscellaneous Income",
+        ]
 
     },
-    quantity : {
-        type : Number
+    quantity: {
+        type: Number,
+        required: [true, "Product quantity is required"],
     },
-    unitPrice : {
-        type : Number
+    unitPrice: {
+        type: Number,
+        required: [true, "Product unit price is required"],
     },
-    vatPercent : {
-        type : Number,
-        
+    vatRate : {
+        type: Number,
     },
-    vatAmount : {
-        type : Number,
+    vatAmount: {
+        type: mongoose.Schema.Types.Decimal128,
     },
-    grossTotal : {
-        type : String,
+    grossTotal: {
+        type: mongoose.Schema.Types.Decimal128,
+
+        required: [true, "Product gross total is required"],
 
     }
 })
@@ -77,7 +89,7 @@ const invoiceDetails = new mongoose.Schema({
     dueDate : {
         type : Date,
     },
-    purchaseReference : {
+    purchaseRefernce : {
         type : String,
     },
     currency: {
@@ -95,8 +107,16 @@ const invoiceDetails = new mongoose.Schema({
             "Standard VAT", "Margin VAT", "Reverse Charge","EC Sales","Zero Rate VAT",
         ]
     },
-    assigneTo : {
-        type : String,
+    assigneTo: {
+        id: {
+            type: mongoose.Types.ObjectId,
+            ref: "TeamMember",
+        },
+
+        name: {
+            type: String,
+
+        }
     }
 });
 
@@ -125,6 +145,9 @@ const invoiceNotesDetail = new mongoose.Schema({
 
 
 const purchaseEstimate = new mongoose.Schema({
+        
+    SINumber: { type: String, unique: true },
+
 
     supplierDetails : supplierDetails,
 
@@ -134,8 +157,57 @@ const purchaseEstimate = new mongoose.Schema({
 
     invoiceNotesDetail : invoiceNotesDetail,
 
+     createdBy: {
+            id: {
+                type: mongoose.Types.ObjectId,
+                ref: "TeamMember",
+                required: true,
+            },
+            name: {
+                type: String,
+                required: true,
+            },
+        } , 
+        updatedBy: {
+                id: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "TeamMember",
+                },
+                name: {
+                    type: String,
+                },
+            }
+        
+
     
 },{timestamps: true});
+
+
+purchaseEstimate.pre('save', async function (next) {
+    if (this.isNew) {
+        const currentYear = new Date().getFullYear();
+
+        let counter = await Counter.findOne({ name: 'purchaseEstimate', year: currentYear });
+
+        if (!counter) {
+            counter = await Counter.create({
+                name: 'purchaseEstimate',
+                year: currentYear,
+                seq: 1
+            });
+            
+        } else {
+            counter.seq++;
+            await counter.save();
+        }
+
+
+        this.SINumber = `PO-${currentYear}-${counter.seq}`;
+    }
+
+    next();
+});
+
 
 
 export const PurchaseEstimate = mongoose.model("PurchaseEstimate",purchaseEstimate)

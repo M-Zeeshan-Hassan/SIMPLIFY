@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { saleClientDetail, saleInvoiceDetail, saleProduct, aggregateTable } from '../Data/Data';
 import FormInput from './FormInput';
 import InputField from './InputField';
-import { useDate, formatDate,convertToInputDateFormat } from './Date';
+import { useDate, formatDate, convertToInputDateFormat } from './Date';
 import { useNavigate } from 'react-router';
 import SelectOptions from './SelectOptions';
 import DynamicField from './DynamicField';
@@ -11,21 +11,22 @@ import { arrowClockwise, arrowLeft, back, refresh, deleteIcon } from './Icons';
 import Button from './Button';
 import TextArea from './TextArea';
 import '../Css/NewInvoiceEstimates.css'
-import { useQuery } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useFetch } from '../Services/ApiService';
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import NProgress from 'nprogress';
+import axios from 'axios';
 
 
 
-const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, url3,
+const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, url3, deletedURL,
     Detail = [...saleClientDetail] }) => {
 
 
     const { id } = useParams();
-        NProgress.configure({ showSpinner: false });
-    
+    NProgress.configure({ showSpinner: false });
+
 
 
 
@@ -52,11 +53,14 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
 
 
     const navigate = useNavigate();
+    const [isDeleted, setIsDeleted] = useState(false);
 
     const { getFetch, updateFetch } = useFetch(`${url}/${id}`);
     const { getFetch: getProducts } = useFetch(url2);
 
     const { getFetch: salesPerson } = useFetch(url3);
+
+
 
     const {
         register,
@@ -100,20 +104,39 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
     useEffect(() => {
         if (allData) {
 
-            setValue("clientName", allData?.clientDetails?.clientName);
-            setValue("contactPerson", allData?.clientDetails?.contactPerson);
-            setValue("email", allData?.clientDetails?.email);
-            setValue("addressType", allData?.clientDetails?.addressType);
+            console.log("allData", allData);
+
+
+            if (allData?.clientDetails?.clientName) {
+
+                setValue("clientName", allData?.clientDetails?.clientName);
+                setValue("contactPerson", allData?.clientDetails?.contactPerson);
+                setValue("email", allData?.clientDetails?.email);
+                setValue("addressType", allData?.clientDetails?.addressType);
+                setValue("shipToAddress", allData?.clientDetails?.shipToAddress);
+            }
+            else {
+                setValue("supplierName", allData?.supplierDetails?.supplierName);
+                setValue("contactPerson", allData?.supplierDetails?.contactPerson);
+                setValue("email", allData?.supplierDetails?.email);
+                setValue("addressType", allData?.supplierDetails?.addressType);
+                setValue("shipToAddress", allData?.supplierDetails?.shipToAddress);
+
+            }
+
+
             setValue("date", convertToInputDateFormat(allData?.invoiceDetails?.date));
             setValue("dueDate", convertToInputDateFormat(allData?.invoiceDetails?.dueDate));
             setValue("purchaseRefernce", allData?.invoiceDetails?.purchaseRefernce);
             setValue("currency", allData?.invoiceDetails?.currency);
             setValue("exchangeRate", allData?.invoiceDetails?.exchangeRate);
             setValue("vatType", allData?.invoiceDetails?.vatType);
-            setValue("shipToAddress", allData?.details?.shipToAddress);
+         //    setValue("shipToAddress", allData?.clientDetails?.shipToAddress);
             setValue("notes", allData?.invoiceNotesDetail?.additionalNotes);
             setValue("paymentTerms", allData?.invoiceNotesDetail?.paymentTerm);
             setValue("assignTo", allData?.invoiceDetails?.assigneTo?.name || '');
+
+
 
 
             if (allData?.product) {
@@ -148,7 +171,7 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
         ['fetchAllProducts'],
         async () => {
             const response = await getProducts();
-            console.log("response",response);
+            console.log("response", response);
             return response?.data;
         },
         {
@@ -197,21 +220,22 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
 
     const user = useSelector((state) => state.auth.user);
 
-       const onSubmit = async (data) => {
-   
-           data = { ...data, updatedBy: { id: user?._id, name: user?.fullName } };
-           console.log(data);
-           try {
-               await updateFetch(data);
-               NProgress.start();
-           } catch (error) {
-               console.error('Error in form submission:', error.message);
-           } finally {
-               NProgress.done();
-           }
-   
-       };
-   
+    const onSubmit = async (data) => {
+
+        data = { ...data, updatedBy: { id: user?._id, name: user?.fullName } };
+        console.log(data);
+        try {
+            await updateFetch(data);
+            NProgress.start();
+              navigate(navigatePath);
+        } catch (error) {
+            console.error('Error in form submission:', error.message);
+        } finally {
+            NProgress.done();
+        }
+
+    };
+
 
 
 
@@ -219,7 +243,50 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
         navigate(navigatePath);
     }, [navigate, navigatePath]);
 
+    const queryClient = useQueryClient();
 
+    const deleteMutation = useMutation(
+        async () => {
+            //    return await axios.delete(`${deletedURL}/${id}`);
+            return await axios.delete(`${deletedURL}/${id}`, {
+                withCredentials: true,
+            });
+        },
+        {
+            onMutate: () => {
+                NProgress.start();
+            },
+            onSuccess: (response) => {
+                console.log("Deleted Successfully:", response.data);
+                NProgress.done();
+                queryClient.invalidateQueries(['fetchInvoice']);
+
+                //  optional: short delay before redirect
+                setTimeout(() => {
+                    navigate(navigatePath);
+                }, 800);
+            },
+            onError: (error) => {
+                console.error("Delete failed:", error);
+                NProgress.done();
+            },
+        }
+    );
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this record?")) {
+            deleteMutation.mutate();
+        }
+    };
+
+
+    if (isDeleted) {
+        return (
+            <div className="flex items-center justify-center h-screen text-2xl text-gray-500">
+                Record not found. It may have been deleted.
+            </div>
+        );
+    }
 
     return (
 
@@ -368,6 +435,7 @@ const EditInvoiceAndEstimate = ({ title, navigatePath, inputHeader, url, url2, u
                                 <div className='flex button'>
 
                                     <Button
+                                        onClick={handleDelete}
                                         type="button" label="Delete"
                                         icon={deleteIcon} className={` flex   border text-white bg-reds border-searchIcon`}
                                     />

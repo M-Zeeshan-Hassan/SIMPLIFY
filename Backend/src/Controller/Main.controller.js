@@ -7,6 +7,7 @@ import { PurchaseInvoice } from "../Models/purchaseInvoice.model.js"
 import { NewClient } from "../Models/Client.model.js";
 import { TeamMember } from "../Models/TeamMember.model.js";
 import {NewSupplier} from "../Models/Supplier.model.js";
+import { PurchaseEstimate } from "../Models/purchaseEstimate.model.js";
 
 export const GetAllSaleInvoice = asyncHandler(async (req, res) => {
 
@@ -22,6 +23,7 @@ export const GetAllSaleInvoice = asyncHandler(async (req, res) => {
                 $project: {
                     SINumber: 1,
                     "clientDetails.clientName": 1,
+                    "clientDetails.clientId" : 1,
                     "invoiceDetails.date": 1,
                     totalAmount: {
                         $sum: {
@@ -49,6 +51,49 @@ export const GetAllSaleInvoice = asyncHandler(async (req, res) => {
 
 
 })
+
+export const GetAllPurchaseEstimate = asyncHandler(async (req, res) => {
+
+    try {
+        const purchaseOrders = await PurchaseEstimate.aggregate([
+            {
+                $sort: { createdAt: -1 }
+            },
+            {
+                $limit: 5
+            },
+            {
+                $project: {
+                    SINumber: 1,
+                    "supplierDetails.supplierName": 1,
+                    "invoiceDetails.date": 1,
+                    totalAmount: {
+                        $sum: {
+                            $map: {
+                                input: "$product",
+                                as: "prod",
+                                in: { $toDouble: "$$prod.grossTotal" }
+                            }
+                        }
+                    }
+                }
+            }
+        ]);
+
+
+        if (!purchaseOrders) {
+            return res.status(404).json(new ApiError(404, "No estimates found"));
+        }
+
+        return res.status(200).json(new ApiResponse(200, purchaseOrders, "Estimates fetched successfully"));
+    }
+    catch (error) {
+        return res.status(500).json(new ApiError(500, "Failed to fetch invoices", error.message));
+    }
+
+
+})
+
 
 
 

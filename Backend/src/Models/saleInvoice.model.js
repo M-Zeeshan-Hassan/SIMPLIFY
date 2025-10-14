@@ -5,7 +5,7 @@ mongoose.pluralize(null);
 const clientDetails = new mongoose.Schema({
     clientId: {
         type: mongoose.Types.ObjectId,
-        ref: "NewClient",
+        ref: "Client",
         required: true
     },
     clientName: {
@@ -88,7 +88,7 @@ const invoiceDetails = new mongoose.Schema({
     dueDate: {
         type: Date,
     },
-    purchaseReference: {
+   purchaseRefernce: {
         type: String,
     },
     currency: {
@@ -133,6 +133,7 @@ const invoiceNotesDetail = new mongoose.Schema({
 const saleInvoice = new mongoose.Schema({
 
     SINumber: { type: String, unique: true },
+    Status : { type: String },
 
     clientDetails: clientDetails,
 

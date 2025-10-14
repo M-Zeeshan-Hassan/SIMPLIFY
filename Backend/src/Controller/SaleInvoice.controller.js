@@ -29,6 +29,39 @@ export const SalesPerson = asyncHandler(async (req, res) => {
 
 });
 
+const assignSalesPerson = async () => {
+    // 1. Get all salespersons sorted by creation date
+    const salesPersons = await TeamMember.find({ userType: "Sales Person" }).sort({ createdAt: 1 });
+
+    if (salesPersons.length === 0) return null;
+
+    // 2. Get the last SaleInvoice that had an assigned salesperson
+    const lastAssignedInvoice = await SaleInvoice.findOne({ "assigneTo.id": { $exists: true, $ne: null } })
+        .sort({ createdAt: -1 });
+
+    // 3. If no invoice found, assign the first salesperson
+    if (!lastAssignedInvoice || !lastAssignedInvoice.assigneTo || !lastAssignedInvoice.assigneTo.id) {
+        return {
+            id: salesPersons[0]._id,
+            name: salesPersons[0].fullName
+        };
+    }
+
+    // 4. Find the index of the last assigned salesperson
+    const lastAssignedId = lastAssignedInvoice.assigneTo.id.toString();
+    const lastIndex = salesPersons.findIndex(user => user._id.toString() === lastAssignedId);
+
+    // 5. Calculate next salesperson index in round-robin
+    const nextIndex = (lastIndex + 1) % salesPersons.length;
+
+    // 6. Return next salesperson
+    return {
+        id: salesPersons[nextIndex]._id,
+        name: salesPersons[nextIndex].fullName
+    };
+};
+
+
 
 export const NewSaleInvoice = asyncHandler(async (req, res) => {
 
@@ -107,6 +140,21 @@ export const NewSaleInvoice = asyncHandler(async (req, res) => {
                 };
             }
         }
+        else {
+            assignedSalesPerson = await assignSalesPerson();
+            console.log("Auto-assigned Sales Person:", assignedSalesPerson);
+        }
+
+         const userRole = await TeamMember.findById(createdBy.id).select("userType");
+                let Status = "";
+        
+                if (userRole && userRole.userType === "Admin") {
+                    console.log("User is Admin");
+                    Status = "Approved";
+                } else {
+                    console.log("User is not Admin");
+                    Status = "Pending";
+                }
 
         const clientDetails = {
             clientId: client._id,
@@ -133,6 +181,7 @@ export const NewSaleInvoice = asyncHandler(async (req, res) => {
         }
 
         const newSaleInvoice = await SaleInvoice.create({
+            Status,
             clientDetails,
             invoiceDetails,
             product: mergedProducts,
@@ -190,12 +239,20 @@ export const Invoice_detailView = asyncHandler(async (req, res) => {
 
     try {
         if (!id) {
-            throw new ApiError(400, 'User ID is required!');
+            return res.status(404).json({
+                success: false,
+                message: 'Record not found',
+                data: null,
+            });
         }
         const saleInvoice = await SaleInvoice.findById(id).select(' -__v ');
 
         if (!saleInvoice) {
-            throw new ApiError(404, 'Sale Invoice not found!');
+            return res.status(404).json({
+                success: false,
+                message: 'Record not found',
+                data: null,
+            });
         }
 
         return res.status(200).json(new ApiResponse(
@@ -254,7 +311,7 @@ export const SaleInvoice_EditView = asyncHandler(async (req, res) => {
             return res.status(404).json(new ApiError(404, "Client not found"));
         }
 
-       
+
         if (Products.length === 0) {
             return res.status(400).json(new ApiError(400, "Please add at least one product"));
         }
@@ -276,7 +333,7 @@ export const SaleInvoice_EditView = asyncHandler(async (req, res) => {
         const products = await Product.find({ "details.productServiceName": { $in: productNames } }).select("_id");
 
         console.log("products", products);
-        
+
         if (products.length !== Products.length) {
             return res.status(400).json(new ApiError(400, "Some products not found in database"));
         }
@@ -290,7 +347,7 @@ export const SaleInvoice_EditView = asyncHandler(async (req, res) => {
 
         let assignedSalesPerson = assignTo;
 
-        console.log("assign",assignedSalesPerson);
+        console.log("assign", assignedSalesPerson);
 
         if (assignTo) {
             const salesPerson = await TeamMember.findOne({ fullName: assignTo }).select("_id fullName");
@@ -360,5 +417,38 @@ export const SaleInvoice_EditView = asyncHandler(async (req, res) => {
             })
         );
     }
+
+})
+
+
+
+export const deleteInvoice = asyncHandler(async (req, res) => {
+    console.log("id", req.params.id)
+
+    try {
+
+        const deletedInvoice = await SaleInvoice.findByIdAndDelete(req.params.id);
+
+        if (!deletedInvoice) {
+            return res.status(404).json({ message: 'Record not found' });
+        }
+
+
+
+        return res.status(200).json(new ApiResponse({
+            message: "Invoice deleted successfully"
+        }));
+
+    }
+    catch (error) {
+
+        res.status(500).json(
+            new ApiResponse({
+                data: null,
+                message: error.message
+            })
+        )
+    }
+
 
 })

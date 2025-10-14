@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { ProductDetail, ProductIcon, saleTable, } from './Data.js'
 import { formatDate } from '../../../Components/Date.js'
 import '../../../Css/NewProduct.css'
-import {arrowLeft, back,refresh, deleteIcon  } from '../../../Components/Icons.js'
+import { arrowLeft, back, refresh, deleteIcon } from '../../../Components/Icons.js'
 import { useNavigate } from 'react-router'
 import Button from '../../../Components/Button.js'
 import DynamicField from '../../../Components/DynamicField.js'
@@ -13,10 +13,11 @@ import 'nprogress/nprogress.css';
 import InputField from '../../../Components/InputField.js'
 import SelectOptions from '../../../Components/SelectOptions.js'
 import { useFetch } from "../../../Services/ApiService.js"
-import { useQuery } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useSelector } from 'react-redux'
 import { Helmet } from "react-helmet";
 import { useParams } from 'react-router-dom'
+import axios from 'axios';
 
 
 const ProductView = () => {
@@ -27,16 +28,23 @@ const ProductView = () => {
     const { id } = useParams();
 
     const { getFetch, updateFetch } = useFetch(`http://localhost:8000/product/view/${id}`);
+    const { getFetch: getSalesPerson } = useFetch("http://localhost:8000/product/new");
+
+    const isAdmin =
+        user?.userType === "Admin" ||
+        user?.userType === "SalesManager" ||
+        user?.userType === "InventoryManager";
+
 
     const {
-        register, handleSubmit, control ,watch,  formState: { errors, isSubmitting, isDirty }, reset, setValue }
+        register, handleSubmit, control, watch, formState: { errors, isSubmitting, isDirty }, reset, setValue }
         = useForm(
         );
 
-    const { fields, append, remove,replace } = useFieldArray({ control, name: "salesPersonAssignment" });
+    const { fields, append, remove, replace } = useFieldArray({ control, name: "salesPersonAssignment" });
 
     const navigate = useNavigate();
-    
+
     const { data: allData, isLoading, error } = useQuery(
         'productData',
         async () => {
@@ -48,6 +56,27 @@ const ProductView = () => {
             keepPreviousData: true,
         }
     );
+
+    const { data: salesPerson } = useQuery(
+        ['fetchAllData'],
+        async () => {
+            const response = await getSalesPerson();
+            console.log(response);
+            return response.data;
+        },
+        {
+            refetchOnWindowFocus: false,
+            keepPreviousData: true,
+        }
+    );
+
+    saleTable[0].inputs[0].selectOption = [];
+
+    salesPerson?.forEach(item => {
+        if (!saleTable[0].inputs[0].selectOption.includes(item.fullName)) {
+            saleTable[0].inputs[0].selectOption.push(item.fullName);
+        }
+    });
 
     useEffect(() => {
         if (allData) {
@@ -91,7 +120,7 @@ const ProductView = () => {
 
     const handleBack = useCallback(() => {
 
-       navigate('/product/list');
+        navigate('/product/list');
     }, [navigate]);
 
 
@@ -102,12 +131,50 @@ const ProductView = () => {
         try {
             await updateFetch(data);
             NProgress.start();
+            navigate('/product/list');
         } catch (error) {
             console.error('Error in form submission:', error.message);
         } finally {
             NProgress.done();
         }
 
+    };
+
+    const deletedURL = "http://localhost:8000/product/deleted"
+
+    const queryClient = useQueryClient();
+
+    const deleteMutation = useMutation(
+        async () => {
+
+            return await axios.delete(`${deletedURL}/${id}`, {
+                withCredentials: true,
+            });
+        },
+        {
+            onMutate: () => {
+                NProgress.start();
+            },
+            onSuccess: (response) => {
+                console.log("Deleted Successfully:", response.data);
+                NProgress.done();
+                queryClient.invalidateQueries(['deleteTeam']);
+
+                setTimeout(() => {
+                    navigate('/product/list');
+                }, 800);
+            },
+            onError: (error) => {
+                console.error("Delete failed:", error);
+                NProgress.done();
+            },
+        }
+    );
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this record?")) {
+            deleteMutation.mutate();
+        }
     };
 
     return (
@@ -158,10 +225,10 @@ const ProductView = () => {
                                                 {fields.isSelect ?
 
                                                     (<SelectOptions field={fields} setValue={setValue} register={register}
-                                                        errors={errors} />)
+                                                        errors={errors}   disabled={!isAdmin} />)
                                                     :
                                                     (<InputField fields={fields} errors={errors}
-                                                        register={register} />
+                                                        register={register}   disabled={!isAdmin} />
                                                     )
                                                 }
                                             </div>
@@ -193,12 +260,14 @@ const ProductView = () => {
 
                             <div className='flex button'>
                                 <Button
+                                  disabled={!isAdmin}
                                     type="button" label="Delete"
+                                    onClick={handleDelete}
                                     icon={deleteIcon} className={` flex   border text-white bg-reds border-searchIcon`}
                                 />
                                 <Button
-                                    type="submit" icon={refresh} label="Update" onSubmit={reset} disabled={!isDirty || isSubmitting}
-                                    className={` ${(!isDirty || isSubmitting) && 'opacity-50'} flex inner-btn  bg-textColor text-white  ml-3`}
+                                    type="submit" icon={refresh} label="Update" onSubmit={reset} disabled={!isDirty || isSubmitting || !isAdmin}
+                                    className={` ${(!isDirty || isSubmitting || !isAdmin   ) && 'opacity-50'} flex inner-btn  bg-textColor text-white  ml-3`}
                                 />
                             </div>
 

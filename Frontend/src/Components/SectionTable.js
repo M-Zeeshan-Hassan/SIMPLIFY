@@ -7,11 +7,12 @@ import { FormattedDate } from './Date'
 
 
 
-const SectionTable = ({ register, setValue, tables, tableData }) => {
+const SectionTable = ({ register, setValue, tables, tableData, createPath, listPath,viewInvoicePath}) => {
     const navigate = useNavigate();
-
+    
     return (
         <>
+    
 
             <div style={{ borderRadius: '10px', boxShadow: '0 0 10px #172b4d1a' }}
                 className="row-2 flex flex-col p-5 bg-dashboard">
@@ -32,11 +33,12 @@ const SectionTable = ({ register, setValue, tables, tableData }) => {
                             />
 
                         </div>
-                        <span onClick={() => navigate("/")}
+                        <span onClick={() => navigate(`${createPath}`)}
                             className="add-new border border-searchIcon rounded py-2 px-2 ">
                             {plus}
                         </span>
-                        <span className="view-all border border-searchIcon rounded py-2 px-2 ">
+                        <span onClick={() => navigate(`${listPath}`)}
+                         className="view-all border border-searchIcon rounded py-2 px-2 ">
                             {expandIcon}
                         </span>
                     </div>
@@ -66,7 +68,7 @@ const SectionTable = ({ register, setValue, tables, tableData }) => {
                             tableData.map((row, index) => (
                                 <tr key={index} className="border-b-2 border-b-searchIcon">
                                     <td className="p-2.5 text-textColor2" style={{ fontSize: "12.5px" }}>
-                                        <Link className="text-downIcon decoration-0 font-medium">
+                                        <Link to={`${viewInvoicePath}/${row._id}`} className="text-downIcon decoration-0 font-medium">
                                             <span>{row?.SINumber}</span>
                                         </Link>
                                     </td>
@@ -74,7 +76,7 @@ const SectionTable = ({ register, setValue, tables, tableData }) => {
                                         {FormattedDate(row?.invoiceDetails?.date)}
                                     </td>
                                     <td className="p-2.5 text-textColor2" style={{ fontSize: "12.5px" }}>
-                                        <Link className="text-downIcon decoration-0 font-medium">
+                                        <Link to={`client/view/${row?.clientDetails?.clientId}`} className="text-downIcon decoration-0 font-medium">
                                             {row?.clientDetails?.clientName}
                                         </Link>
                                     </td>

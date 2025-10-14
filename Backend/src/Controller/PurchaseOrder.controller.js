@@ -3,7 +3,7 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { Product } from "../Models/product.model.js";
 import {NewSupplier} from "../Models/Supplier.model.js"
-import { PurchaseOrder } from "../Models/Order.model.js"
+import { PurchaseEstimate } from "../Models/purchaseEstimate.model.js"
 
 export const NewPurchaseOrder = asyncHandler(async (req, res) => {
 
@@ -23,18 +23,20 @@ export const NewPurchaseOrder = asyncHandler(async (req, res) => {
         notes,
         paymentTerms,
         createdBy,
+        assignTo
 
     } = req.body;
 
     try {
 
         if ([supplierName, currency, vatType].map((item) => item.trim()).includes('')) {
-            console.log("client name", clientName, "currency", currency, "vat type", vatType);
+            console.log("supplier name", supplierName, "currency", currency, "vat type", vatType);
             return res.status(400).json(new ApiError(400, "Please fill all the required fields"));
         }
 
 
         const supplier = await NewSupplier.findOne({ "details.supplierName": supplierName }).select("_id");
+        console.log(supplier, "supplier");
 
         if (!supplier) {
             return res.status(404).json(new ApiError(404, "supplier not found"));
@@ -68,10 +70,24 @@ export const NewPurchaseOrder = asyncHandler(async (req, res) => {
 
         console.log(mergedProducts, "merged products");
 
+         let assignedSalesPerson = assignTo;
+        
+                console.log(assignedSalesPerson);
+                if (assignTo) {
+                    const salesPerson = await TeamMember.findOne({ fullName: assignTo }).select("_id fullName");
+        
+                    if (salesPerson) {
+                        assignedSalesPerson = {
+                            id: salesPerson._id,
+                            name: salesPerson.fullName,
+                        };
+                    }
+                }
+
 
         const supplierDetails = {
             supplierId: supplier._id,
-            clientName,
+            supplierName,
             contactPerson,
             email,
             addressType,
@@ -84,6 +100,7 @@ export const NewPurchaseOrder = asyncHandler(async (req, res) => {
             currency,
             exchangeRate,
             vatType,
+            assigneTo: assignedSalesPerson,
 
         }
 
@@ -92,7 +109,7 @@ export const NewPurchaseOrder = asyncHandler(async (req, res) => {
             paymentTerm: paymentTerms,
         }
 
-        const newPurchaseInvoice = await PurchaseOrder.create({
+        const newPurchaseInvoice = await PurchaseEstimate.create({
             supplierDetails,
             invoiceDetails,
             product: mergedProducts,
@@ -120,7 +137,7 @@ export const GetPurchaseOrder = asyncHandler(async (req, res) => {
         const pageNumber = parseInt(page, 10) || 1;
         const limitNumber = parseInt(limit, 10) || 10;
 
-        const data = await PurchaseOrder.find()
+        const data = await PurchaseEstimate.find()
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber).sort({ createdAt: -1 }).select(' -__v -updatedAt');
 
@@ -138,12 +155,13 @@ export const GetPurchaseOrder = asyncHandler(async (req, res) => {
 export const detailView = asyncHandler(async (req, res) => {
 
     const { id } = req.params;
+    console.log(id);
 
     try {
         if (!id) {
             throw new ApiError(400, ' ID is required!');
         }
-        const purchaseOrder = await PurchaseOrder.findById(id).select(' -__v ');
+        const purchaseOrder = await PurchaseEstimate.findById(id).select(' -__v ');
 
         if (!purchaseOrder) {
             throw new ApiError(404, 'PurchaseOrder not found!');
@@ -160,3 +178,163 @@ export const detailView = asyncHandler(async (req, res) => {
         throw new ApiError(500, error.message);
     }
 });
+
+
+
+export const PurchaseOrder_EditView = asyncHandler(async (req, res) => {
+
+    const { id } = req.params;
+    console.log("id", id);
+
+
+    const {
+        supplierName,
+        contactPerson,
+        email,
+        addressType,
+        date,
+        dueDate,
+        purchaseRefernce,
+        currency,
+        exchangeRate,
+        vatType,
+        Product: Products,
+        shipToAddress,
+        notes,
+        paymentTerms,
+        createdBy,
+        updatedBy,
+        assignTo
+
+    } = req.body;
+
+    try {
+
+        if ([supplierName, currency, vatType].some(item => !item || typeof item !== 'string' || item.trim() === '')) {
+            console.log("supplier name", supplierName, "currency", currency, "vat type", vatType);
+            return res.status(400).json(new ApiError(400, "Please fill all the required fields"));
+        }
+
+
+        const supplier = await NewSupplier.findOne({ "details.supplierName": supplierName }).select("_id");
+        console.log("supplier", supplier);
+
+        if (!supplier) {
+            return res.status(404).json(new ApiError(404, "Supplier not found"));
+        }
+
+       
+        if (Products.length === 0) {
+            return res.status(400).json(new ApiError(400, "Please add at least one product"));
+        }
+
+        console.log("Products", Products);
+
+        if (
+            Products.some((item) =>
+                item.productServiceName === '' ||
+                item.sku === ''
+            )
+        ) {
+            return res.status(400).json(new ApiError(400, "Please fill all the required fields in product"));
+        }
+
+        const productNames = Products.map(item => item.productServiceName);
+        console.log("productNames", productNames);
+
+        const products = await Product.find({ "details.productServiceName": { $in: productNames } }).select("_id");
+
+        console.log("products", products);
+        
+        if (products.length !== Products.length) {
+            return res.status(400).json(new ApiError(400, "Some products not found in database"));
+        }
+
+                console.log("products0", products);
+
+        const mergedProducts = Products.map((item, index) => ({
+            ...item,
+            productID: products[index]._id
+        }));
+                console.log("products1", products);
+
+
+        console.log("mergedProducts", mergedProducts);
+
+        let assignedSalesPerson = assignTo;
+
+        console.log("assign",assignedSalesPerson);
+
+        if (assignTo) {
+            const salesPerson = await TeamMember.findOne({ fullName: assignTo }).select("_id fullName");
+
+            if (salesPerson) {
+                assignedSalesPerson = {
+                    id: salesPerson._id,
+                    name: salesPerson.fullName,
+                };
+            }
+        }
+
+
+   console.log("assignedSalesPerson", assignedSalesPerson);
+        const supplierDetails = {
+            supplierId: supplier._id,
+            supplierName: supplierName,
+            contactPerson,
+            email,
+            addressType,
+            shipToAddress
+        };
+        console.log("supplierDetails", supplierDetails);
+        const invoiceDetails = {
+            date,
+            dueDate,
+            purchaseRefernce,
+            currency,
+            exchangeRate,
+            vatType,
+
+        }
+
+        console.log("invoiceDetails", invoiceDetails);
+        const invoiceNotesDetail = {
+            additionalNotes: notes,
+            paymentTerm: paymentTerms,
+        }
+        console.log("invoiceNotesDetail", invoiceNotesDetail);
+
+        const updateInvoice = await PurchaseEstimate.findByIdAndUpdate(
+            id,
+            {
+
+                supplierDetails,
+                invoiceDetails,
+                product: mergedProducts,
+                invoiceNotesDetail,
+                createdBy,
+                updatedBy,
+            }, { new: true }
+        );
+
+        if (!updateInvoice) {
+            return res.status(400).json(new ApiError(400, "Failed to create invoice"));
+        }
+
+        return res.status(200).json(new ApiResponse({
+            data: updateInvoice, message: "Invoice created successfully"
+        })
+        );
+
+
+
+    } catch (error) {
+        res.status(500).json(
+            new ApiResponse({
+                data: null,
+                message: error.message
+            })
+        );
+    }
+
+})

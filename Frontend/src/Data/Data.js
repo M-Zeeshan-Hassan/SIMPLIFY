@@ -141,7 +141,7 @@ export const navItems = [
         icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-grid" viewBox="0 0 16 16">
           <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z" />
         </svg>,
-        value: "All Sale Orders",
+        value: "All Purchase Orders",
         Path: "/purchases/po/list"
       }, {
 
@@ -259,44 +259,11 @@ export const navItems = [
           <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
         </svg>,
         value: "Invoice Report",
+          Path: "/reports/invoice",
       }
     ]
   },
-  {
-    icon: <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-      className="bi bi-box" viewBox="0 0 16 16">
-      <path
-        d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5 8.186 1.113zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z" />
-    </svg>,
-    value: "Tools",
-    icon2: <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="currentColor"
-      className="bi bi-caret-down-fill text-downIcon " viewBox="0 0 16 16">
-      <path
-        d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-    </svg>,
-    dropdown: [
-
-      {
-        icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-list-check" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
-        </svg>,
-        value: "Import Products",
-
-      }, {
-        icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-list-check" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
-        </svg>,
-        value: "Import Clients",
-
-      }, {
-        icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-list-check" viewBox="0 0 16 16">
-          <path fillRule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
-        </svg>,
-        value: "Import Suppliers",
-
-      }
-    ]
-  }
+ 
 ]
 
 
@@ -366,7 +333,7 @@ export const section = [
         d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
     </svg>,
     value3: '19,571.53%',
-    path: "/Sale/AllSaleInvoice"
+    path: "/sales/si/list"
   },
   {
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
@@ -392,7 +359,7 @@ export const section = [
     </svg>,
     value3: '-11.60%',
     minus: 'text-textColor6',
-    path: "/Purchase/AllPurchaseInvoice"
+    path: "/purchase/pi/list"
 
 
   },
@@ -413,7 +380,7 @@ export const section = [
       <path fillRule="evenodd"
         d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
     </svg>,
-    path: "/Purchase/AllSupplier"
+    path: "supplier/list"
 
   },
   {
@@ -439,7 +406,7 @@ export const section = [
         d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
     </svg>,
     value3: '33.33%',
-    path: "/Sale/AllClient"
+    path: "client/list"
 
 
   }, {
@@ -466,7 +433,7 @@ export const section = [
         d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
     </svg>,
     value3: '66.67% ',
-    path: "/Product/AllProduct"
+    path: "product/list"
 
   }
 
@@ -794,6 +761,102 @@ export const saleClientDetail = [
 
 ];
 
+export const purchaseSupplierDetail = [
+  {
+    label: "*",
+    span: "Supplier Name",
+    required: " Supplier Name is required.",
+    message: "Supplier Name is required.",
+    placeholder: "Type here to Search",
+    types: 'text',
+    inputName: "supplierName",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+      fill="currentColor" className="bi bi-person absolute left-2 top-2.5 text-searchIcon" viewBox="0 0 16 16">
+      <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+    </svg>,
+    require: true,
+    icon2: <svg style={{ left: '96%', top: '50%', transform: 'translate(-50%,-50%)' }} xmlns="http://www.w3.org/2000/svg"
+      width="11" height="11"
+      fill="currentColor" className="bi bi-caret-down-fill text-browns absolute  " viewBox="0 0 16 16">
+      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+    </svg>,
+    paddingLeft: 'pl-8',
+    isSelect: true,
+    selectOption: [
+      "Please Eneter two or more Characters."
+    ]
+
+  }, {
+
+    span: "Contact Person",
+    placeholder: "Choose Person",
+    types: 'text',
+    inputName: "contactPerson",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+      fill="currentColor" className="bi bi-person absolute left-2 top-2.5 text-searchIcon" viewBox="0 0 16 16">
+      <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+    </svg>,
+    icon2: <svg style={{ left: '96%', top: '50%', transform: 'translate(-50%,-50%)' }} xmlns="http://www.w3.org/2000/svg"
+      width="11" height="11"
+      fill="currentColor" className="bi bi-caret-down-fill text-browns absolute  " viewBox="0 0 16 16">
+      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+    </svg>,
+    isSelect: true,
+    paddingLeft: 'pl-8',
+    selectOption: [
+
+    ]
+
+
+
+  },
+  {
+
+    span: "Email",
+    disabled: true,
+    disabled: "bg-disabled border-white text-textColor2",
+    placeholder: "Email",
+    types: 'email',
+    inputName: "email",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+      className="bi bi-envelope absolute text-searchIcon top-2.5 left-2" viewBox="0 0 16 16">
+      <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+    </svg>,
+    paddingLeft: "pl-8",
+
+  },
+  {
+
+    span: "Ship to Address Type",
+    placeholder: "Select Address Type",
+    types: 'text',
+    inputName: "addressType",
+    paddingLeft: "pl-8",
+    icon2: <svg style={{ left: '96%', top: '50%', transform: 'translate(-50%,-50%)' }} xmlns="http://www.w3.org/2000/svg"
+      width="11" height="11"
+      fill="currentColor" className="bi bi-caret-down-fill text-browns absolute  " viewBox="0 0 16 16">
+      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+    </svg>,
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+      className="bi bi-geo-alt  absolute text-searchIcon top-2.5 left-2" viewBox="0 0 16 16">
+      <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
+      <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+    </svg>,
+    isSelect: true,
+
+    disabled: false,
+
+    selectOption: [
+      "Bill To Address",
+      "Ship To Address"
+    ]
+
+  }
+
+];
+
+
+
 
 export const saleInvoiceDetail = [
 
@@ -853,6 +916,10 @@ export const saleInvoiceDetail = [
       <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
     </svg>,
     require: true,
+     isSelect: true,
+    selectOption: [
+      "Pakistani Rupee | PKRs",
+    ]
 
   }, {
     label: "*",
@@ -860,7 +927,7 @@ export const saleInvoiceDetail = [
     required: true,
     paddingLeft: "pl-8",
 
-    placeholder: "",
+    placeholder: "$ 0.00",
     types: 'number',
     inputName: "exchangeRate",
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"

@@ -434,3 +434,25 @@ export const clientsHeader = [
 
 ];
 
+export const saleInvoiceViewHeader = [
+   "SI Number",
+    "Issue Date",
+    "Client",
+    "Country",
+    "Ref#",
+    "Description",
+    "Total Quantity"
+
+]
+
+export const purchaseInvoiceViewHeader = [
+"PI Number",
+    "Issue Date",
+    "Supplier",
+    "Country",
+    "Ref#",
+    "Description",
+    "Total Quantity"
+
+]
+

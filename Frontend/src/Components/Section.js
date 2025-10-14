@@ -21,16 +21,63 @@ const Section = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, setValue, watch } = useForm();
 
-  let path = "si/list";
+  let salePath = "si/list";
+  
+  let purchasePath = "pi/list";
   let path2 = "client/list"
+  let createPath = "";
+  let listPath = "";
+    let viewInvoicePath = ""
+    let createPurchasePath = "";
+  let purchaselistPath = "";
+    let purchaseviewInvoicePath = ""
+
 
   const recentSales = watch("searchBar");
+  const recentPurchase = watch("searchWareHouse");
 
 
   if (recentSales === "Sale Estimate") {
-    path = "se/list";
+    salePath = "se/list";
+    createPath = "sales/se/new";
+     listPath = "sales/se/list";
+     viewInvoicePath = "sales/se/edit"
+
+       saleTableData.forEach(item => {
+    item.title = "Recent Sale Estimates";
+  });
   } else {
-    path = "si/list";
+    salePath = "si/list";
+     createPath = "sales/si/new";
+     listPath = "sales/si/list";
+      viewInvoicePath = "sales/si/edit"
+
+         saleTableData.forEach(item => {
+    item.title = "Recent Sale Invoices";
+  });
+      
+  }
+
+   if (recentPurchase === "Purchase Order") {
+    purchasePath = "pe/list";
+    createPath = "purchases/pe/new";
+     listPath = "purchases/pe/list";
+     viewInvoicePath = "purchases/pe/edit"
+
+       purchaseTableData.forEach(item => {
+    item.title = "Recent Purchase Orders";
+  });
+  } else {
+     purchasePath = "pi/list";
+    createPath = "purchases/pi/new";
+     listPath = "purchases/pi/list";
+     viewInvoicePath = "purchases/pi/edit"
+
+
+         purchaseTableData.forEach(item => {
+    item.title = "Recent Purchase Invoices";
+  });
+      
   }
 
   const clientsSuppler = watch("searchUsers");
@@ -46,17 +93,18 @@ const Section = () => {
   const user = useSelector((state) => state.auth.user);
   console.log(user);
 
-  const { getFetch: saleFetch } = useFetch(`http://localhost:8000/main/${path}`);
-  const { getFetch: purchaseFetch } = useFetch("http://localhost:8000/main/pi/list");
+  const { getFetch: saleFetch } = useFetch(`http://localhost:8000/main/${salePath}`);
+  const { getFetch: purchaseFetch } = useFetch(`http://localhost:8000/main/${purchasePath}`);
   const { getFetch: allClients } = useFetch(`http://localhost:8000/main/${path2}`);
   const { getFetch: TeamFetch } = useFetch("http://localhost:8000/main/team/list");
 
 
   const { data: salesInvoice, isLoading, error } = useQuery(
-    ['salesInvoice', path],
+    ['salesInvoice', salePath],
     async () => {
 
       const response = await saleFetch();
+      console.log("saleInvoice",response);
       return response.data;
     },
     {
@@ -67,7 +115,7 @@ const Section = () => {
 
 
   const { data: purchaseInvoice } = useQuery(
-    ['purchaseInvoice'],
+    ['purchaseInvoice', purchasePath ],
     async () => {
       const response = await purchaseFetch();
       console.log(response);
@@ -96,7 +144,7 @@ const Section = () => {
     ['AllTeams'],
     async () => {
       const response = await TeamFetch();
-      console.log(response);
+     
       return response.data;
     },
     {
@@ -104,6 +152,8 @@ const Section = () => {
       keepPreviousData: true,
     }
   );
+
+  
 
   //Role-based dashboard view - moved after all hooks
   if (user && (user.userType === 'Sales Person' || user.userType === 'Sales Manager')) {
@@ -198,6 +248,9 @@ const Section = () => {
               register={register} setValue={setValue}
               tableData={salesInvoice}
               tables={saleTableData}
+              createPath={createPath}
+              listPath={listPath}
+              viewInvoicePath={viewInvoicePath}
 
             />
 
@@ -205,6 +258,9 @@ const Section = () => {
               register={register} setValue={setValue}
               tableData={purchaseInvoice}
               tables={purchaseTableData}
+               createPath={createPurchasePath}
+              listPath={purchaselistPath}
+              viewInvoicePath={purchaseviewInvoicePath}
             />
 
           </div>

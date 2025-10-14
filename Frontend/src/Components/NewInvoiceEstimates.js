@@ -14,6 +14,8 @@ import '../Css/NewInvoiceEstimates.css'
 import { useQuery } from 'react-query';
 import { useFetch } from '../Services/ApiService';
 import { useSelector } from 'react-redux'
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 
 
@@ -26,6 +28,8 @@ const NewInvoiceEstimates = ({ title, navigatePath, inputHeader, url, url2, url3
     const [totalQuanity, setTotalQuanity] = useState(0);
     const [totalVat, setTotalVat] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
+
+    NProgress.configure({ showSpinner: false });
 
 
     useEffect(() => {
@@ -73,49 +77,81 @@ const NewInvoiceEstimates = ({ title, navigatePath, inputHeader, url, url2, url3
 
     const { fields, append, remove } = useFieldArray({ control, name: "Product" });
 
-    const searchTerm = watch("clientName");
+    const searchTerm = watch("clientName") || watch("supplierName");
 
     const { data: allClients = [], isLoading, error } = useQuery(
-        ['fetchAllClients', searchTerm],
+        ["fetchAllClients", searchTerm],
         async () => {
             const response = await getFetch(searchTerm);
             const allClient = response?.data;
 
             if (allClient) {
+                // Reset options before pushing new ones
+                Detail[0].selectOption = [];
 
-                saleClientDetail[0].selectOption = [];
+                // Add client/supplier names
+                allClient.forEach((item) => {
+                    const clientName = item?.details?.clientName;
+                    const supplierName = item?.details?.supplierName;
 
-                allClient?.forEach(item => {
-                    if (item?.details?.clientName &&
-                        !saleClientDetail[0].selectOption.includes(item.details.clientName)) {
-                        saleClientDetail[0].selectOption.push(item.details.clientName);
+                    if (clientName && !Detail[0].selectOption.includes(clientName)) {
+                        Detail[0].selectOption.push(clientName);
+                    }
+
+                    if (supplierName && !Detail[0].selectOption.includes(supplierName)) {
+                        Detail[0].selectOption.push(supplierName);
                     }
                 });
 
-                const selectedClient = allClient.find(items => items?.details?.clientName === watch("clientName"));
+                // Find selected client or supplier
+                const selectedClient = allClient.find(
+                    (item) => item?.details?.clientName === watch("clientName")
+                );
+                const selectedSupplier = allClient.find(
+                    (item) => item?.details?.supplierName === watch("supplierName")
+                );
 
-                if (selectedClient) {
-
-                    selectedClient.contactPersons.forEach(person => {
-                        
-                        if (!saleClientDetail[1].selectOption.includes(person.fullName)) {
-                            saleClientDetail[1].selectOption.push(person.fullName);
+                if (selectedClient || selectedSupplier) {
+                    // Merge contact persons
+                    Detail[1].selectOption = []; // reset before adding
+                    const persons = [
+                        ...(selectedClient?.contactPersons || []),
+                        ...(selectedSupplier?.contactPersons || []),
+                    ];
+                    persons.forEach((person) => {
+                        if (!Detail[1].selectOption.includes(person?.fullName)) {
+                            Detail[1].selectOption.push(person?.fullName);
                         }
                     });
 
-                    setValue("email", selectedClient.details.email);
+                    // ✅ Email
+                    setValue(
+                        "email",
+                        selectedClient?.details?.email || selectedSupplier?.details?.email || ""
+                    );
+
+                    // ✅ Address Type Default
                     setValue("addressType", "Bill To Address");
 
-                    if (selectedClient) {
-                        if (watch("addressType") === "Bill To Address") {
-                            setValue("shipToAddress", selectedClient?.locations?.billToAddress?.address1 || "");
-                        } else if (watch("addressType") === "Ship To Address") {
-                            setValue("shipToAddress", selectedClient?.locations?.shipToAddress?.address1 || "");
-                        }
+                    if (watch("addressType") === "Bill To Address") {
+                        setValue(
+                            "shipToAddress",
+                            selectedClient?.locations?.billToAddress?.address1 ||
+                            selectedSupplier?.locations?.billToAddress?.address1 ||
+                            ""
+                        );
+                    } else if (watch("addressType") === "Ship To Address") {
+                        setValue(
+                            "shipToAddress",
+                            selectedClient?.locations?.shipToAddress?.address1 ||
+                            selectedSupplier?.locations?.shipToAddress?.address1 ||
+                            ""
+                        );
                     }
-
                 }
             }
+
+            return response?.data;
         },
         {
             enabled: searchTerm?.length > 1,
@@ -123,6 +159,7 @@ const NewInvoiceEstimates = ({ title, navigatePath, inputHeader, url, url2, url3
             keepPreviousData: true,
         }
     );
+
 
     const handleAddProduct = useCallback(() => {
         append({
@@ -198,10 +235,15 @@ const NewInvoiceEstimates = ({ title, navigatePath, inputHeader, url, url2, url3
         try {
             console.log(data);
             await postFetch(data);
+              NProgress.start();
+             navigate('/sales/si/list');
             reset();
         } catch (error) {
             console.error('Error in form submission:', error.message);
         }
+         finally {
+            NProgress.done();
+          }
     }
 
 

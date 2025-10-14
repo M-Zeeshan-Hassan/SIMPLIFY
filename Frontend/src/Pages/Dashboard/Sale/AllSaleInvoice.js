@@ -94,12 +94,10 @@ const AllSaleInvoice = ({ searchTerm, allData, lengthData }) => {
 
               </td>
 
-              <td className='p-3 font-medium text-textColor2 text-xs'>
-                {
-
-
-                }
-
+              <td className="px-1 py-3 text-center whitespace-nowrap">
+                <span className="text-[12.5px] bg-bgColor text-white rounded px-1.5 py-1 block w-fit ">
+                  {field?.Status}
+                </span>
               </td>
 
 
@@ -108,10 +106,10 @@ const AllSaleInvoice = ({ searchTerm, allData, lengthData }) => {
                   {three_Dots_icon}
                 </span>
 
-                <div className="absolute  top-5 right-11 w-28  p-1.5 bg-white rounded shadow-sideShadow hidden group-hover:block z-10">
+                <div className="absolute  top-4 right-24 w-24  p-1 bg-white rounded shadow-sideShadow hidden group-hover:block z-10">
                   <Link
                     to={`/sales/si/edit/${field._id}`} style={{ fontSize: '12.5px' }}
-                    className=" p-2 flex items-center gap-5  "
+                    className=" p-2 flex items-center gap-2  "
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className=" text-textColor bi bi-pencil-square" viewBox="0 0 16 16">
                       <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const InputField = ({ fields, register, errors, password }) => {
+const InputField = ({ fields, register, errors, password, disabled }) => {
 
 
 
@@ -22,14 +22,14 @@ const InputField = ({ fields, register, errors, password }) => {
                 {fields.icon}
 
                 <input style={{ boxShadow: '0 0 6px #172b4d0a' }}
-                    className={`
+                    className={` ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
                                 ${fields.disabled ? fields.disabled : 'bg-white'} w-full outline-none py-2 px-2 
                                 ${fields.paddingLeft} rounded text-sm text-textColor2 font-normal border
                                 ${fields.upperCase} ${errors[fields.inputName] ? 'focus:border-reds' : 'focus:border-textColor'}  `}
 
                     type={fields.types}
                     placeholder={fields.placeholder}
-                    disabled={fields.disabled}
+                    disabled={fields.disabled || disabled }
                     readOnly={fields.readonly}
                     autoComplete="off"
 

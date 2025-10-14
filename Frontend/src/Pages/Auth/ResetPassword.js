@@ -1,0 +1,178 @@
+import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router';
+import { useForm } from "react-hook-form";
+import Button from '../../Components/Button';
+import { arrowClockwise } from '../../Components/Icons';
+import RectangleArtSmall from "../../Assets/RectangleArtSmall.svg";
+import RectangleArtLarge from "../../Assets/RectangleArtLarge.svg";
+import { useFetch } from '../../Services/ApiService';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import simplifyLogo from "../../Assets/simplify-logo.jpeg";
+import imageCombo from "../../Assets/ImageCombo.png";
+
+const ResetPassword = () => {
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm();
+  const { postFetch } = useFetch(`http://localhost:8000/api/reset-password`);
+  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false); // ✅ Track API success state
+
+  const onSubmit = async (data) => {
+    try {
+      NProgress.start();
+      const response = await postFetch(data);
+      console.log(response.statusCode["data"]);
+      
+      if (response?.message === "Success") {
+        setSuccess(true);
+        reset();
+      }
+
+    } catch (error) {
+      console.error('Error in form submission:', error.message);
+    } finally {
+      NProgress.done();
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Reset Password</title>
+      </Helmet>
+
+      <div className='grid grid-cols-2 w-full h-screen sm:grid-cols-1 xsm:grid-cols-1'>
+        {/* LEFT SIDE */}
+        <div className='flex flex-col p-16'>
+          <div className='flex items-center gap-5 mb-24 xsm:mb-16'>
+            <img src={simplifyLogo} className='xsm:w-3/6 w-1/2' alt="Simplify Logo" />
+          </div>
+
+          <div className='flex flex-col'>
+            <div className='mb-8'>
+              <h4 className='xsm:text-3xl text-darkBlue font-semibold text-4xl'>Reset Password</h4>
+              <p className='text-darkBlue text-base mt-1.5'>
+                {success
+                  ? "Please check your email inbox for further instructions."
+                  : "Enter your registered email below, we will send you the reset password link."
+                }
+              </p>
+            </div>
+
+            {/* ✅ Conditional Rendering */}
+            {!success ? (
+              <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div className='flex flex-col gap-2.5'>
+                  <div className='flex flex-col'>
+                    <div className="flex relative items-center w-full">
+                      {/* Email Icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        className="bi bi-envelope absolute text-gray-400 left-3 top-1/2 transform -translate-y-1/2"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                      </svg>
+
+                      {/* Email Input */}
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        style={{ boxShadow: '0 0 6px #172b4d0a' }}
+                        className={`pl-10 pr-3 py-2 w-[70%] rounded-md text-[15px] text-gray-700 font-normal border 
+                          placeholder:text-[15px] placeholder:text-gray-400 
+                          focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none
+                          transition duration-150 ease-in-out
+                          ${errors.email ? 'border-red-400 focus:ring-red-400 focus:border-red-400' : 'border-gray-300'}
+                        `}
+                        {...register("email", {
+                          required: "Email is required.",
+                          minLength: {
+                            value: 4,
+                            message: "Email must be at least 4 characters.",
+                          },
+                          pattern: {
+                            value:
+                              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                            message: "Enter a valid email address",
+                          },
+                        })}
+                      />
+                    </div>
+
+                    {errors.email && (
+                      <small className='text-red-500 text-xs font-medium mt-1'>
+                        {errors["email"].message}
+                      </small>
+                    )}
+                  </div>
+                </div>
+
+                <div className='flex items-center gap-5 my-10 xsm:flex-col'>
+                  <Button
+                    label={"Send Reset Password Link"}
+                    disabled={!isDirty || isSubmitting}
+                    type="submit"
+                    className={`font-semibold tracking-wide xsm:w-full ${( !isDirty || isSubmitting) && 'opacity-50'} bg-textColor text-white`}
+                  />
+
+                  <Button
+                    label={"Back to Login"}
+                    onClick={() => { navigate("/login") }}
+                    icon={arrowClockwise}
+                    className="xsm:w-full tracking-wide border border-searchIcon flex font-semibold bg-white text-textColor2"
+                  />
+                </div>
+              </form>
+            ) : (
+              // ✅ SUCCESS MESSAGE BLOCK
+              <div className="flex flex-col items-start mt-10">
+                <p className="text-green-600 font-medium text-base mb-6">
+                  ✅ We have emailed you a password reset link.
+                </p>
+                <Button
+                  label={"Back to Login"}
+                  onClick={() => navigate("/login")}
+                  icon={arrowClockwise}
+                  className="xsm:w-full tracking-wide border border-searchIcon flex font-semibold bg-white text-textColor2"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className='mt-24'>
+            <p className='text-xs text-sectionColor'>
+              Copyright 2025, Simplify Business
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className='bg-textColor relative sm:hidden xsm:hidden'>
+          <img className='absolute top-0 left-0' src={RectangleArtSmall} alt='rectangle-art-small' />
+          <img className='absolute bottom-0 right-0' src={RectangleArtLarge} alt='rectangle-art-large' />
+
+          <div style={{ padding: '75px' }} className='flex flex-col text-center relative items-center justify-center z-10 h-full'>
+            <div className='flex justify-center items-center'>
+              <img className='block' src={imageCombo} alt='image-combo' />
+            </div>
+            <div className='flex justify-center mt-4 items-center flex-col w-4/6 text-white'>
+              <h4 style={{ fontSize: '28px', lineHeight: '30px' }} className='tracking-wide font-semibold'>
+                Start managing your business and team more efficiently.
+              </h4>
+              <p className='mt-2.5 text-sm tracking-wide'>
+                Manage and optimize Sales, Purchases, Inventory, Reporting, Users and more.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ResetPassword;

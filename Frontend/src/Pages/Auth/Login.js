@@ -1,4 +1,4 @@
-import React, { useCallback,useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import RectangleArtSmall from "../../Assets/RectangleArtSmall.svg"
 import RectangleArtLarge from "../../Assets/RectangleArtLarge.svg"
 import { Helmet } from "react-helmet";
@@ -12,20 +12,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from "../../Features/AuthSlice.js";
 import { useNavigate } from 'react-router'
 import NProgress from 'nprogress';
-
-
+import imageCombo from "../../Assets/ImageCombo.png"
 
 
 
 
 const Login = () => {
 
-     const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
-      const { token, user, loading, error } = useSelector((state) => state.auth);
-      const storedToken = localStorage.getItem("userToken");
-       const tokens = token || storedToken;
+    const { token, user, loading, error } = useSelector((state) => state.auth);
+    const storedToken = localStorage.getItem("userToken");
+    const tokens = token || storedToken;
 
 
     const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm({
@@ -37,11 +36,11 @@ const Login = () => {
 
     const inputField = [
         {
-            label : "Email",
-            paddingLeft : "pl-8",
+            label: "Email",
+            paddingLeft: "pl-8",
             placeholder: "Email",
             required: "Email is required.",
-            pattern : /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             types: 'email',
             inputName: "email",
             icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -51,8 +50,8 @@ const Login = () => {
             message2: "Email can only contain letters and digits",
             message: "Email is required to be at least 4 character.",
         }, {
-            label : "Password",
-            paddingLeft : "pl-8",
+            label: "Password",
+            paddingLeft: "pl-8",
             placeholder: "Password",
             types: 'password',
             required: "Password is required",
@@ -62,7 +61,7 @@ const Login = () => {
                 <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
                 <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
             </svg>,
-            pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
             message2: "Password must contain at least 1 number, 1 uppercase, and 1 lowercase letter.",
 
 
@@ -71,8 +70,8 @@ const Login = () => {
 
 
     useEffect(() => {
-        if (tokens ) {
-            navigate("/", {replace: true});
+        if (tokens) {
+            navigate("/", { replace: true });
             NProgress.done();
         }
     }, [token, user, navigate]);
@@ -87,12 +86,12 @@ const Login = () => {
         if (error) {
             alert(error.message);
         }
-      
+
     }, [loading, error]);
 
 
 
-    const onSubmit =  (data) => {
+    const onSubmit = (data) => {
         console.log(data);
 
         dispatch(loginUser(data));
@@ -144,7 +143,7 @@ const Login = () => {
                                             </label>
 
                                             <InputField key={index} fields={fields}
-                                             register={register} errors={errors} />
+                                                register={register} errors={errors} />
 
                                         </div>)
 
@@ -170,6 +169,7 @@ const Login = () => {
                                     />
                                     <Button
                                         label={"Reset Password"}
+                                        onClick={() => {navigate("/reset-password")}}
                                         icon={arrowClockwise}
                                         className={`xsm:w-full  tracking-wide border border-searchIcon  flex font-semibold   bg-white text-textColor2`}
                                     />
@@ -201,25 +201,24 @@ const Login = () => {
 
                 </div >
 
-                <div className='bg-textColor relative p-16 sm:hidden xsm:hidden'>
+                <div className='bg-textColor relative  sm:hidden xsm:hidden'>
                     <img className='absolute top-0 left-0' src={RectangleArtSmall} alt='rectangle-art-small' />
                     <img className='absolute bottom-0 right-0' src={RectangleArtLarge} alt='rectangle-art-large' />
 
-                    <div className='flex flex-col text-center relative justify-center items-center  z-10 h-full'>
-                       
-                        <div className='flex justify-center  items-center flex-col w-4/6 text-white'>
+                    <div style={{ padding: '75px' }} className='flex flex-col  text-center relative items-center justify-center  z-10 h-full'>
+                        <div className='flex justify-center items-center'>
+                            <img className='block' src={imageCombo} alt='image-combo' />
+                        </div>
+                        <div className='flex justify-center mt-4  items-center flex-col w-4/6 text-white'>
                             <h4 style={{ fontSize: '28px', lineHeight: '30px' }} className=' tracking-wide font-semibold'>
                                 Start managing your business and team more efficiently.
                             </h4>
                             <p className='mt-2.5 text-sm tracking-wide'>
                                 Manage and optimize Sales, Purchases, Inventory, Reporting, Users and more.
-
                             </p>
-
                         </div>
                     </div>
                 </div>
-
 
             </div >
 

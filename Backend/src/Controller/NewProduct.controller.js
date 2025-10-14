@@ -172,6 +172,11 @@ export const allProducts = asyncHandler(async (req, res) => {
         const pageNumber = parseInt(page, 10) || 1;
         const limitNumber = parseInt(limit, 10) || 10;
 
+           let query = {};
+        if (req.user.userType === 'Sales Person') {
+            query = { 'salesPersonAssignment.assignedUser.id': req.user._id };
+        }
+
         const data = await Product.find()
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber).sort({ createdAt: -1 }).select('-__v  -updatedAt');
@@ -354,6 +359,38 @@ export const editView = asyncHandler(async (req, res) => {
         );
     }
 });
+
+
+  export const deleteProduct = asyncHandler(async (req, res) => {
+      console.log("id", req.params.id)
+  
+      try {
+  
+          const deletedInvoice = await Product.findByIdAndDelete(req.params.id);
+  
+          if (!deletedInvoice) {
+              return res.status(404).json({ message: 'Record not found' });
+          }
+  
+  
+  
+          return res.status(200).json(new ApiResponse({
+              message: "Product deleted successfully"
+          }));
+  
+      }
+      catch (error) {
+  
+          res.status(500).json(
+              new ApiResponse({
+                  data: null,
+                  message: error.message
+              })
+          )
+      }
+  
+  
+  })
 
 
 

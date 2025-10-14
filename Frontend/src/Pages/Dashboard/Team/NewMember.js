@@ -10,10 +10,14 @@ import InputField from '../../../Components/InputField'
 import SelectOptions from '../../../Components/SelectOptions'
 import { useFetch } from '../../../Services/ApiService'
 import { useSelector } from 'react-redux'
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 
 const NewMember = () => {
 
+
+    NProgress.configure({ showSpinner: false });
 
     const {
         register,
@@ -23,8 +27,13 @@ const NewMember = () => {
         formState: { errors, isSubmitting, isDirty },
         reset,
 
-    } = useForm();
-    
+    } = useForm({
+        defaultValues: {
+            commisionRate: 0,
+            corporateTax: 0
+        }
+    });
+
     const { postFetchFile } = useFetch("http://localhost:8000/team/new");
     const user = useSelector((state) => state.auth.user);
     const [formattedDate] = useDate();
@@ -39,12 +48,17 @@ const NewMember = () => {
         console.log(data);
         try {
             await postFetchFile(data);
+            NProgress.start();
+            navigate('/team/list');
             resetFileInput();
             reset();
 
         }
         catch (error) {
             console.log("Error : ", error.message);
+        }
+        finally {
+            NProgress.done();
         }
 
     }
@@ -116,7 +130,7 @@ const NewMember = () => {
 
                                     })}
 
-                                {console.log(watch("userType"))}
+
 
                                 {dynamic_User_Field.map((fields, index) => {
                                     return (

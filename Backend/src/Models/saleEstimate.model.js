@@ -6,7 +6,7 @@ mongoose.pluralize(null);
 const clientDetails = new mongoose.Schema({
     clientId : {
         type : mongoose.Types.ObjectId,
-        ref : "NewClient",
+        ref : "Client",
         required : true
     },
     clientName: {
@@ -21,7 +21,7 @@ const clientDetails = new mongoose.Schema({
     },
     email : {
         type : String,
-        unique : true,
+      //  unique : true,
     },
     addressType : {
         type : String,
@@ -35,38 +35,48 @@ const clientDetails = new mongoose.Schema({
 });
 
 const product = new mongoose.Schema({
-    sku : {
-       type : String,
+    productID: {
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+        required: true,
     },
-    name : {
-        type : String
+    sku: {
+        type: String,
+        required: [true, "Product SKU is required"],
     },
-    category : {
-      type : String,
-      enum : ["General Sales", "Goodwill","Insurance Claims","Stock","Rent Income","Sales of Assets",
-        "Royalties Recived", "Plant and Machinery","Office Equipment","Motor Vehicles",
-        "Bank Charges","Capital Expenditure","Commissions Received","Credit Charges (Late Payments)",
-        "Discounts Allowed","Distribution and Carriage","Flat Rate VAT Sales Adjustment",
-        "Furniture and Fixtures","General Export Sales","Goodwill Amortisation","Intangible Asset Amortisation",
-        "Miscellaneous Income",
-      ]
+    productServiceName: {
+        type: String,
+        required: [true, "Product name is required"],
+    },
+    category: {
+        type: String,
+        enum: ["General Sales", "Goodwill", "Insurance Claims", "Stock", "Rent Income", "Sales of Assets",
+            "Royalties Recived", "Plant and Machinery", "Office Equipment", "Motor Vehicles",
+            "Bank Charges", "Capital Expenditure", "Commissions Received", "Credit Charges (Late Payments)",
+            "Discounts Allowed", "Distribution and Carriage", "Flat Rate VAT Sales Adjustment",
+            "Furniture and Fixtures", "General Export Sales", "Goodwill Amortisation", "Intangible Asset Amortisation",
+            "Miscellaneous Income",
+        ]
 
     },
-    quantity : {
-        type : Number
+    quantity: {
+        type: Number,
+        required: [true, "Product quantity is required"],
     },
-    unitPrice : {
-        type : Number
+    unitPrice: {
+        type: Number,
+        required: [true, "Product unit price is required"],
     },
-    vatPercent : {
-        type : Number,
-        
+    vatRate : {
+        type: Number,
     },
-    vatAmount : {
-        type : Number,
+    vatAmount: {
+        type: mongoose.Schema.Types.Decimal128,
     },
-    grossTotal : {
-        type : String,
+    grossTotal: {
+        type: mongoose.Schema.Types.Decimal128,
+
+        required: [true, "Product gross total is required"],
 
     }
 })
@@ -97,39 +107,35 @@ const invoiceDetails = new mongoose.Schema({
             "Standard VAT", "Margin VAT", "Reverse Charge","EC Sales","Zero Rate VAT",
         ]
     },
-    assigneTo : {
-        type : String,
-    }
+     assigneTo: {
+           id : {
+               type: mongoose.Types.ObjectId,
+               ref: "TeamMember",
+           },
+   
+           name : {
+               type : String,
+            
+           }
+       }
 });
 
 const invoiceNotesDetail = new mongoose.Schema({
 
     
-    SINumber: { type: String, unique: true },
 
     additionalNotes : {
         type: String,
     },
     paymentTerm : {
         type : String,
-    },
-
-    totalQuantity : {
-        type : Number
-    },
-    dispatched : {
-        type : Number,
-    },
-    subAmount : {
-        type : String,
-    },
-    totalAmount : {
-        type : String,
     }
 })
 
 
 const saleEstimate = new mongoose.Schema({
+        SINumber: { type: String, unique: true },
+
 
     clientDetails : clientDetails,
 
@@ -138,6 +144,27 @@ const saleEstimate = new mongoose.Schema({
     product : [product],
 
     invoiceNotesDetail : invoiceNotesDetail,
+
+      createdBy: {
+            id: {
+                type: mongoose.Types.ObjectId,
+                ref: "TeamMember",
+                required: true,
+            },
+            name: {
+                type: String,
+                required: true,
+            },
+        } , 
+        updatedBy: {
+                id: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "TeamMember",
+                },
+                name: {
+                    type: String,
+                },
+            }
 
     
 },{timestamps: true});

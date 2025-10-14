@@ -33,13 +33,14 @@ const Sidebar = ({ sideOpen }) => {
 
     const handleLogout = async () => {
         try {
-            const response = await postFetch();
-            if (response?.success) {
+        //     const response = await postFetch();
+        //     console.log(response);
+        //     if (response?.success) {
                 dispatch(logout());
                 navigate("/login");
-           } else {
-               console.log("Logout failed:", response?.message);
-           }
+        //    } else {
+        //        console.log("Logout failed:", response?.message);
+        //   }
 
         }
         catch (error) {
@@ -189,7 +190,7 @@ const Sidebar = ({ sideOpen }) => {
                         </div>
                     </div>
 
-                    <p style={{ fontSize: '10px' }} className='text-textColor2 text-center '> 2023, SMIELS | 0.0.1-BETA.73 </p>
+                    <p style={{ fontSize: '10px' }} className='text-textColor2 text-center '> 2023, SIMPLIFY | 0.0.1-BETA.73 </p>
                 </footer>
             </div >
         </div >

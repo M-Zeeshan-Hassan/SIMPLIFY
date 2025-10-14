@@ -23,6 +23,9 @@ import SalesRouter from "./Routes/Sales.route.js";
 import SupplierRouter from "./Routes/Supplier.route.js"
 import PurchaseRouter from "./Routes/Purchase.route.js";
 import MainRouter from "./Routes/Main.route.js";
+import saleInvoiceViewRoute from "./Routes/ReportsView.route.js";
+import purchaseInvoiceViewRoute from "./Routes/ReportsView.route.js";
+
 
 
 app.use("/team", teamMemberRouter);
@@ -33,6 +36,8 @@ app.use("/sales", SalesRouter);
 app.use("/purchases", PurchaseRouter);
 app.use("/supplier", SupplierRouter);
 app.use("/main", MainRouter);
+app.use("/reports", saleInvoiceViewRoute);
+app.use("/reports", purchaseInvoiceViewRoute);
 
 
 

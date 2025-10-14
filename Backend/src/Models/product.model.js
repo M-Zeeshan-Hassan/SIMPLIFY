@@ -87,6 +87,7 @@ const ProductSchema = new mongoose.Schema({
     },
     salesPersonAssignment: {
         type: [SalesPersonAssignmentSchema],
+        default: [],
     },
     createdBy: {
         id: {

@@ -6,6 +6,7 @@ import { NewSupplier } from "../Models/Supplier.model.js";
 
 export const getSupplier = asyncHandler(async (req, res) => {
     const { search } = req.query;
+    console.log(search);
 
     try {
         if (!search) {

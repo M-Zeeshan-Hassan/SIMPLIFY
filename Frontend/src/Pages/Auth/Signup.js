@@ -11,6 +11,7 @@ import { useFetch } from '../../Services/ApiService'
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import simplifyLogo from "../../Assets/simplify-logo.jpeg"
+import imageCombo from "../../Assets/ImageCombo.png"
 
 
 const Signup = () => {
@@ -134,15 +135,15 @@ const Signup = () => {
 
 
         </div>
-        <div className='bg-textColor relative p-16 sm:hidden xsm:hidden'>
+        <div className='bg-textColor relative  sm:hidden xsm:hidden'>
           <img className='absolute top-0 left-0' src={RectangleArtSmall} alt='rectangle-art-small' />
           <img className='absolute bottom-0 right-0' src={RectangleArtLarge} alt='rectangle-art-large' />
 
-          <div className='flex flex-col text-center relative items-center justify-center  z-10 h-full'>
-            {/* <div className='flex justify-center items-center'>
+          <div style={{padding : '75px'}} className='flex flex-col  text-center relative items-center justify-center  z-10 h-full'>
+             <div className='flex justify-center items-center'>
               <img className='block' src={imageCombo} alt='image-combo' />
-            </div> */}
-            <div className='flex justify-center  items-center flex-col w-4/6 text-white'>
+            </div> 
+            <div className='flex justify-center mt-4  items-center flex-col w-4/6 text-white'>
               <h4 style={{ fontSize: '28px', lineHeight: '30px' }} className=' tracking-wide font-semibold'>
                 Start managing your business and team more efficiently.
               </h4>

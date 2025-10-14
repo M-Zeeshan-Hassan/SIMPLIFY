@@ -6,10 +6,13 @@ import Section from "../Components/Section"
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
 import Login from "../Pages/Auth/Login";
+import ResetPassword from '../Pages/Auth/ResetPassword';
 import ProtectedRoute from './ProtectedRoute';
 import { Navigate, useNavigate } from 'react-router';
 import EditSaleInvoice from '../Pages/Dashboard/Sale/SaleInvoiceEdit';
 import CompanyProfile from '../Components/CompanyProfile';
+import EditPurchaseOrder from '../Pages/Dashboard/Purchase/PurchaseOrderEdit';
+import EditPurchaseInvoice from '../Pages/Dashboard/Purchase/PurchaseInvoiceEdit';
 
 const NewPassword = lazy(() => import("../Pages/Auth/NewPassword"));
 const Signup = lazy(() => import("../Pages/Auth/Signup"));
@@ -33,6 +36,7 @@ const TeamView = lazy(() => import("../Pages/Dashboard/Team/TeamView"));
 const ProductView = lazy(() => import("../Pages/Dashboard/Product/ProductView"));
 const ClientView = lazy(() => import("../Pages/Dashboard/Sale/ClientView"));
 const SupplierView = lazy(() => import("../Pages/Dashboard/Purchase/SupplierView"));
+const InvoiceReport = lazy(() => import("../Pages/Dashboard/Reprots/InvoiceReport"));
 
 
 
@@ -65,6 +69,7 @@ const AppRoutes = () => {
                         <Route path='/signup' element={<Signup />} />
                         <Route path='/login' element={<Login />} />
                         <Route path='new-password/:id' element={<NewPassword />} />
+                        <Route path='/reset-password' element={<ResetPassword />} />
 
                         <Route path="/" element={<ProtectedRoute />}>
                             <Route element={<DashboardLayout />}>
@@ -76,6 +81,8 @@ const AppRoutes = () => {
                                 <Route path="sales/si/list" element={<AllSaleInvoice />} />
                                 <Route path="sales/si/new" element={<NewInvoice />} />
                                 <Route path="sales/si/edit/:id" element={<EditSaleInvoice />} />
+                               <Route path="purchases/po/edit/:id" element={<EditPurchaseOrder />} />
+                                <Route path="purchases/pi/edit/:id" element={<EditPurchaseInvoice />} />
                                 <Route path="sales/se/list" element={<AllSaleEstimate />} />
                                 <Route path="sales/se/new" element={<NewEstimate />} />
                                 <Route path="client/view/:id" element={<ClientView />} />
@@ -91,6 +98,8 @@ const AppRoutes = () => {
                                 <Route path="team/list" element={<AllMember />} />
                                 <Route path="team/view/:id" element={<TeamView />} />
                                 <Route path="team/new" element={<NewMember />} />
+                                 <Route path="reports/invoice" element={<InvoiceReport />} />
+                                
 
                             </Route>
                         </Route>
