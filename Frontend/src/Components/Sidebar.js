@@ -77,10 +77,10 @@ const Sidebar = ({ sideOpen }) => {
                     <div className={` ${isOpen} search  flex items-center relative mb-2.5 `}>
                         {search}
 
-                        <input className={`focus:border-textColor placeholder:text-sm placeholder:text-textColor2
+                        {/* <input className={`focus:border-textColor placeholder:text-sm placeholder:text-textColor2
                              placeholder:font-normal   p-1.5 pl-7 outline-0 border box-border
                                overflow-hidden 
-                             rounded-md border-searchIcon`} type="text" placeholder="Search using IMEI/Serial" />
+                             rounded-md border-searchIcon`} type="text" placeholder="Search using IMEI/Serial" /> */}
                     </div>
                     <ul className="navbar-nav pb-5 border-b border-searchIcon">
                         {filteredNavItems.map((menu, index) => {
@@ -190,7 +190,7 @@ const Sidebar = ({ sideOpen }) => {
                         </div>
                     </div>
 
-                    <p style={{ fontSize: '10px' }} className='text-textColor2 text-center '> 2023, SIMPLIFY | 0.0.1-BETA.73 </p>
+                    <p style={{ fontSize: '10px' }} className='text-textColor2 text-center '> 2025, SIMPLIFY  </p>
                 </footer>
             </div >
         </div >
