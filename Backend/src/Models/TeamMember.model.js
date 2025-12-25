@@ -36,6 +36,7 @@ const TeamMemberSchema = new mongoose.Schema({
             "Inventory Manager",
             "Sales Manager",
             "Sales Person",
+            "Super Admin"
         ],
     },
     contractType: {

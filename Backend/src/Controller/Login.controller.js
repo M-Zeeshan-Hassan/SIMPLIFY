@@ -33,7 +33,112 @@ const generateAccessTokenandRefreshToken = async (userID) => {
         throw new Error(error.message);
     }
 }
+export const signUp = asyncHandler(async (req, res) => {
 
+    const { firstName, lastName, email } = req.body;
+    let active = true;
+    let userType = "Super Admin";
+
+      try {
+
+        if (!email || !firstName || !lastName) {
+            return res.status(400).json(new ApiError(400, "All fields are required"));
+        }
+
+         const existingUser = await TeamMember.findOne({ email });
+                if (existingUser) {
+                  //  throw new ApiError(400, 'User already exists!');
+                    return res.status(400).json(new ApiError(400, 'User already exists!'));
+                }
+
+         const fullName =    `${firstName} ${lastName}`;
+               
+                const user = new TeamMember({
+                    active,
+                    email,
+                    fullName,
+                    userType,
+                });
+
+                  await user.save();
+
+        const checkUser = await TeamMember.findOne({ email });
+
+        if (!checkUser) {
+
+           // throw new ApiError(500, 'User not found!');
+            return res.status(500).json(new ApiError(500, 'User not found!'));
+
+        }
+
+         const mailOptions = {
+            from: "mzhassan980@gmail.com",
+            to: checkUser.email,
+            subject: `Welcome ${checkUser.firstName} ${checkUser.lastName}`,
+            html: `
+    <div style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 30px;">
+      <div style="max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #007bff; text-align: center;">Password Reset Request</h2>
+        
+        <p style="font-size: 16px; color: #333;">
+          Hi <strong> Hi ${checkUser.fullName}</strong>,
+        </p>
+
+        <p style="font-size: 15px; color: #555; line-height: 1.6;">
+         Please click on the following link to Choose a Password and get started.
+          You can set your password by clicking the button below.
+        </p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="http://localhost:3000/new-password/${checkUser._id}"
+             style="display:inline-block;background:#007bff;color:white;
+                    padding:12px 22px;border-radius:5px;text-decoration:none;
+                    font-size:16px;font-weight:500;">
+             Generate Password
+          </a>
+        </div>
+
+        <p style="font-size: 14px; color: #777;">
+          If you didn’t request a password reset, you can safely ignore this email. 
+          This link will expire in 30 minutes for your security.
+        </p>
+
+        <hr style="margin: 25px 0; border: none; border-top: 1px solid #eee;" />
+
+        <p style="font-size: 13px; color: #999; text-align: center;">
+          © ${new Date().getFullYear()} Simplify. All rights reserved.
+        </p>
+      </div>
+    </div>
+  `,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        })
+
+          return res.status(201).json(new ApiResponse(
+            {
+                data: checkUser,
+                message: 'User created successfully!'
+            }
+
+
+        ));
+
+    }
+    catch (error) {
+        return res.status(500).json(new ApiError(500, error.message));
+
+    }
+
+})
 export const Login = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;

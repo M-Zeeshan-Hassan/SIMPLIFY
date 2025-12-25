@@ -99,8 +99,6 @@ const AppRoutes = () => {
                                 <Route path="team/view/:id" element={<TeamView />} />
                                 <Route path="team/new" element={<NewMember />} />
                                  <Route path="reports/invoice" element={<InvoiceReport />} />
-                                
-
                             </Route>
                         </Route>
                     </Routes>

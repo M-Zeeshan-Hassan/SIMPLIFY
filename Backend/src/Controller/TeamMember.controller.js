@@ -29,10 +29,12 @@ const createTeamMember = asyncHandler(async (req, res) => {
 
         const existingUser = await TeamMember.findOne({ email });
         if (existingUser) {
-            throw new ApiError(400, 'User already exists!');
+          //  throw new ApiError(400, 'User already exists!');
+            return res.status(400).json(new ApiError(400, 'User already exists!'));
         }
         if(!createdBy){
-            throw new ApiError(400, 'Created By is required!');
+          //  throw new ApiError(400, 'Created By is required!');
+            return res.status(400).json(new ApiError(400, 'Created By is required!'));
         }
 
         const fullName =    `${firstName} ${lastName}`;
@@ -56,7 +58,8 @@ const createTeamMember = asyncHandler(async (req, res) => {
 
         if (!checkUser) {
 
-            throw new ApiError(500, 'User not found!');
+           // throw new ApiError(500, 'User not found!');
+            return res.status(500).json(new ApiError(500, 'User not found!'));
 
         }
 
@@ -108,7 +111,12 @@ const createTeamMember = asyncHandler(async (req, res) => {
         ));
 
     } catch (error) {
-        throw new ApiError(500, error.message);
+      //  throw new ApiError(500, error.message);
+        return res.status(500).json(new ApiResponse(
+            {
+                data: null,
+                message: `Server error: ${error.message}`,
+            }))
     }
 
 
