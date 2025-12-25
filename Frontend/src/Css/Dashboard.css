@@ -1,0 +1,28 @@
+/* ============================= */
+/* DASHBOARD GLOBAL STYLES */
+/* ============================= */
+
+.smiels-dashboard {
+  cursor: default;
+}
+
+/* Make all clickable dashboard items show pointer */
+.smiels-dashboard button,
+.smiels-dashboard a,
+.smiels-dashboard svg,
+.smiels-dashboard .card,
+.smiels-dashboard .stat-card,
+.smiels-dashboard .summary-card {
+  cursor: pointer;
+}
+
+/* Prevent text selection cursor on icons */
+.smiels-dashboard svg {
+  user-select: none;
+}
+
+/* Keep form fields correct */
+.smiels-dashboard input,
+.smiels-dashboard textarea {
+  cursor: text;
+}
